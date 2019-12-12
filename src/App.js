@@ -1,25 +1,33 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState, createContext } from 'react';
 import './App.css';
 
-function App() {
+const AppContext = createContext({})
+function Leaf () {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AppContext.Consumer>
+      {
+        data => <h1>name: {data.num}</h1>
+      }
+    </AppContext.Consumer>
+  )
+}
+function Middle() {
+  return (
+    <Leaf />
+  )
+}
+function App() {
+  const [num, setNum] = useState(1)
+  function addBtn () {
+    return setNum(num + 1)
+  }
+  return (
+    <AppContext.Provider value={{
+      num: num
+    }}>
+      <button onClick={addBtn}>按钮</button>
+      <Middle />
+    </AppContext.Provider>
   );
 }
 
