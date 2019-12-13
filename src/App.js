@@ -1,33 +1,41 @@
-import React, { useState, createContext } from 'react';
+import React, { useState, createContext, useContext } from 'react';
 import './App.css';
+import Leaf from './Leaf'
 
-const AppContext = createContext({})
-function Leaf () {
-  return (
-    <AppContext.Consumer>
-      {
-        data => <h1>name: {data.num}</h1>
-      }
-    </AppContext.Consumer>
-  )
-}
+export const NumContext = createContext({num: 0})
+
+// class Leaf extends React.Component {
+//   static contextType = NumContext
+//   render(){
+//     console.log(this);
+//     return (
+//       <h1>name: {this.context.num}</h1>
+//     )
+//   }
+// }
+// function Leaf () {
+//   const { num } = useContext(NumContext)
+//   return (
+//     <h1>{num}</h1>
+//   )
+// }
 function Middle() {
   return (
     <Leaf />
   )
 }
 function App() {
-  const [num, setNum] = useState(1)
-  function addBtn () {
-    return setNum(num + 1)
-  }
+  // const [num, setNum] = useState(1)
+  // function addBtn () {
+  //   return setNum(num + 1)
+  // }
   return (
-    <AppContext.Provider value={{
-      num: num
+    <NumContext.Provider value={{
+      num: 2
     }}>
-      <button onClick={addBtn}>按钮</button>
+      <button>按钮</button>
       <Middle />
-    </AppContext.Provider>
+    </NumContext.Provider>
   );
 }
 
