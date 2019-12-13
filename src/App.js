@@ -1,42 +1,60 @@
-import React, { useState, createContext, useContext } from 'react';
+import React, { lazy, Suspense, Component } from 'react';
 import './App.css';
-import Leaf from './Leaf'
+// lazy suspense
+// https://zh-hans.reactjs.org/docs/code-splitting.html#error-boundaries
 
-export const NumContext = createContext({num: 0})
-
-// class Leaf extends React.Component {
-//   static contextType = NumContext
-//   render(){
-//     console.log(this);
-//     return (
-//       <h1>name: {this.context.num}</h1>
-//     )
-//   }
-// }
-// function Leaf () {
-//   const { num } = useContext(NumContext)
+const AboutComponent = lazy(() => import(/*webpackChunkName:"about"*/'./About.js'))
+// 1  函数形式
+// function App() {
 //   return (
-//     <h1>{num}</h1>
-//   )
+//     <div>
+//       <Suspense fallback={<div>Loading</div>}>
+//         <AboutComponent />
+//       </Suspense>
+//     </div>
+//   );
 // }
-function Middle() {
-  return (
-    <Leaf />
-  )
+// 2 类
+class App extends Component {
+  state = {
+    hasError: false
+  }
+  componentDidCatch () {
+    this.setState({
+      hasError: true
+    })
+  }
+  render () {
+    if (this.state.hasError) {
+      return (
+        <div>Error</div>
+      )
+    }
+    return (
+      <div>
+          <Suspense fallback={<div>Loading</div>}>
+            <AboutComponent />
+          </Suspense>
+      </div>
+    )
+  }
 }
-function App() {
-  // const [num, setNum] = useState(1)
-  // function addBtn () {
-  //   return setNum(num + 1)
-  // }
-  return (
-    <NumContext.Provider value={{
-      num: 2
-    }}>
-      <button>按钮</button>
-      <Middle />
-    </NumContext.Provider>
-  );
-}
+// 路由代码分割
+// import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+// import React, { Suspense, lazy } from 'react';
+
+// const Home = lazy(() => import('./routes/Home'));
+// const About = lazy(() => import('./routes/About'));
+
+// const App = () => (
+//   <Router>
+//     <Suspense fallback={<div>Loading...</div>}>
+//       <Switch>
+//         <Route exact path="/" component={Home}/>
+//         <Route path="/about" component={About}/>
+//       </Switch>
+//     </Suspense>
+//   </Router>
+// );
 
 export default App;
