@@ -1,60 +1,60 @@
-import React, { lazy, Suspense, Component } from 'react';
+import React, {  Component, PureComponent, memo } from 'react';
 import './App.css';
-// lazy suspense
-// https://zh-hans.reactjs.org/docs/code-splitting.html#error-boundaries
 
-const AboutComponent = lazy(() => import(/*webpackChunkName:"about"*/'./About.js'))
-// 1  函数形式
-// function App() {
-//   return (
-//     <div>
-//       <Suspense fallback={<div>Loading</div>}>
-//         <AboutComponent />
-//       </Suspense>
-//     </div>
-//   );
+// memo文档
+// https://zh-hans.reactjs.org/docs/react-api.html#reactmemo
+// React.PureComponent 中的 shouldComponentUpdate() 仅作对象的浅层比较。如果对象中包含复杂的数据结构，则有可能因为无法检查深层的差别，产生错误的比对结果。仅在你的 props 和 state 较为简单时，才使用 React.PureComponent，或者在深层数据结构发生变化时调用 forceUpdate() 来确保组件被正确地更新。你也可以考虑使用 immutable 对象加速嵌套数据的比较
+
+// class Foo extends PureComponent {
+//   // shouldComponentUpdate (nextProps, nextState) {
+//   //   if (nextProps.name === this.props.name) {
+//   //     return false
+//   //   }
+//   //   return true
+//   // }
+
+//   // 无状态组件
+//   // PureComponent 只有props 的第一级发生变化才会更新
+//   render () {
+//     console.log("foo render");
+//     return (
+//       <div>
+//           {this.props.person.age}
+//       </div>
+//     )
+//   }
 // }
-// 2 类
+const Foo = memo(function Foo (props) {
+  console.log("Foo render");
+  return (
+      <div>
+          {props.person.age}
+      </div>
+    )
+})
+
 class App extends Component {
   state = {
-    hasError: false
+    count: 1,
+    person: {
+      age: 1
+    }
   }
-  componentDidCatch () {
-    this.setState({
-      hasError: true
-    })
+  callback = () => {
+
   }
   render () {
-    if (this.state.hasError) {
-      return (
-        <div>Error</div>
-      )
-    }
+    const { count, person } = this.state
     return (
       <div>
-          <Suspense fallback={<div>Loading</div>}>
-            <AboutComponent />
-          </Suspense>
+          <button onClick={() => {
+            person.age++
+            this.setState({count: count + 1})}
+          }>按钮</button>
+          <Foo person={person} cb={ this.callback }/>
+          <div>{this.state.person.age}</div>
       </div>
     )
   }
 }
-// 路由代码分割
-// import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-// import React, { Suspense, lazy } from 'react';
-
-// const Home = lazy(() => import('./routes/Home'));
-// const About = lazy(() => import('./routes/About'));
-
-// const App = () => (
-//   <Router>
-//     <Suspense fallback={<div>Loading...</div>}>
-//       <Switch>
-//         <Route exact path="/" component={Home}/>
-//         <Route path="/about" component={About}/>
-//       </Switch>
-//     </Suspense>
-//   </Router>
-// );
-
 export default App;
