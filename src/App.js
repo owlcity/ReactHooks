@@ -1,74 +1,33 @@
 import React, { useState, Component, PureComponent, useMemo, memo, useRef, useCallback, useEffect } from 'react';
 import './App.css';
 
-// useRef
-// 1 获取子组件或者DOM节点的句柄
-// 2 渲染周期之间共享数据的存储
-
-// function Counter (props) {
-//   return (
-//     <h1>{props.count}</h1>
-//   )
+// class Counter extends PureComponent {
+//   render () {
+//     const { props } = this
+//     return (
+//       <h1 onClick={props.onClick}>{props.count}</h1>
+//     )
+//   }
 // }
-// memo
-// const Counter = memo(function Counter(props) {
-//    console.log('Counter render'); 
-//    return (
-//     <h1 onClick={props.onClick}>{props.count}</h1>
-//    )
-// })
-class Counter extends PureComponent {
-  speak () {
-    console.log('ref 获取组件扩展dom元素使用场景');
-  }
-  render () {
-    const { props } = this
-    return (
-      <h1 onClick={props.onClick}>{props.count}</h1>
-    )
-  }
+// Counter 改为自定义hook
+function useCounter(count) {
+  const size = useSize()
+  return (
+    <h1>
+      {count}
+      width: {size.width}
+      height: {size.height}
+    </h1>
+  )
 }
-
-function App (props) {
-  const [count, setCount] = useState(0)
-  const countRef = useRef(null)
-  // useRef 两种使用方式
-  // 1 获取子组件扩展dom元素
-  // 2 同步获取不同渲染周期需要共享的数据
+// 自定义hooks函数
+function useCount(defaultCount) {
+  const [count, setCount] = useState(defaultCount)
   let timer = useRef()
-
-  const double = useMemo(() => {
-    return count * 2
-  }, [count === 3]) // 第二个参数类似于useEffect 第二个参数
-
-  // const half = useMemo(() => {
-  //   return count / 2
-  // }, [double])
-  // useMemo //渲染期间执行 
-  // useEffect //执行副作用，所以在组件渲染后执行
-
-  // const onClick = () => {
-  //   console.log('click');
-  // }
-  // useMemo(() => fn) 等价于
-  // useCallback(fn)
-  // const onClick = useMemo(() => {
-  //   return () => {
-  //     console.log('click');
-  //   }
-  // }, [])
-  const onClick = useCallback(() => {
-    console.log('click');
-    // console.log(countRef); // 报错 Function components cannot be given refs
-    // 可以看出函数组件不能完全替代类组件，函数组件不能被实例化，所以在这里需要把Couter组件改为类组件    
-    console.log(countRef.current);
-    countRef.current.speak()
-  }, [countRef])
-
   useEffect(() => {
     timer.current = setInterval(() => {
       setCount(count => count + 1)
-    }, 100)
+    }, 1000)
   }, [])
 
   useEffect(() => {
@@ -76,15 +35,53 @@ function App (props) {
       clearInterval(timer.current)
     }
   })
+  return [count, setCount]
+}
 
+function useSize() {
+  const [size, setSize] = useState({
+    width: document.documentElement.clientWidth,
+    height: document.documentElement.clientHeight
+  })
+
+  const onResize = useCallback(() => {
+    setSize({
+      width: document.documentElement.clientWidth,
+      height: document.documentElement.clientHeight
+    })
+  }, [])
+
+  useEffect(() => {
+    window.addEventListener('resize', onResize, false)
+    return () => {
+      window.removeEventListener('resize', onResize, false)
+    }
+  }, [])
+
+  return size
+}
+
+function App (props) {
+  const [count, setCount] = useCount(0)
+  const Counter = useCounter(count)
+  const size = useSize()
+  const a = () => {
+    console.log('事件传递');
+  }
   return (
     <div>
       <button onClick={() => {setCount(count+1)}}>
-        Click me {count}
-        double {double}
+        Click me {count},
+        <br />
+        width: {size.width}
+        height: {size.height}
       </button>
-
-      <Counter ref={countRef} count={double} onClick={onClick} />
+      {
+        /**
+         * <Counter count={count} onClick={a}  />
+         */
+      }
+      { Counter }
     </div>
   )
 }
