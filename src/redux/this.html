@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>this</title>
+</head>
+<body>
+    
+</body>
+</html>
+<script type="text/javascript">
+var obj = {
+    value: 0,
+    fn: function() {
+        // this.value++
+        // var f = function() {
+        //     console.log(this); //window
+        //     this.value ++
+        // }
+        let f = () => {
+            console.log(this); // obj
+            this.value++
+        }
+        f()
+
+    }
+}
+obj.fn()
+console.log(obj.value)
+##### 11• React/Vue的事件绑定机制
+##### 12• ES5和ES6的类和继承，以及关联到原型链、作用域的一些知识
+##### 13• 弹性布局Flex，纯函数，箭头函数
+##### 14• 浏览器渲染机制
+##### 15• hybird的原理
+##### 16• 如何解决移动端click延时方案
+##### 17• ES6中for…in和for…of有什么区别
+##### 18• 传统XMLRequest与fetch接口来说有什么劣势，fetch接口在使用中有什么需要注意的地方？
+##### 19• React中的context的作用是什么？
+##### 20• 前端工程化中webpack、gulp、grunt有什么异同点？各自的工作方式是什么？
+##### 21• 浏览器的缓存机制
+##### 22• React 的setState的异步方式原理
+##### 23• 如何判断一个对象为空，一个数组为空？如何区分是数据还是字符串
+##### 24• 和=的区别
+</script>
